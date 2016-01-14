@@ -10,7 +10,7 @@ Class aliasing for provide flat namespace on your Application.
 Note
 ----
 
-This library is designed for **Application**.  Do not use `AliasLoader` by library code.
+This library is designed for **Application**.  Do not use `AliasLoader` by public library code. 
 
 Installation
 ------------
@@ -40,13 +40,16 @@ AwesomeClass::awesome_method();
 
 ### After
 
-```bootstrap.php
+```php
 <?php
 
+/**
+ * bootstrap.php
+ */
 \Teto\AliasLoader::add('Deep\Nested\Library\Module\Awesome\Miracle', 'AwesomeClass');
 ```
 
-```
+```php
 <?php
 namespace MyProject\Nested;
 
