@@ -21,8 +21,8 @@ final class AliasLoader
      */
     public static function add($from, $to)
     {
-        if (strpos($from, '\\') !== 0) {
-            $from = '\\' . $from;
+        if (strpos($from, '\\') === 0) {
+            $from = substr($from, 1);
         }
 
         self::$alias_map[$to] = $from;
@@ -42,6 +42,19 @@ final class AliasLoader
         }
     }
 
+    public static function clear()
+    {
+        self::$alias_map = [];
+    }
+
+    public static function unregisterAutoloader()
+    {
+        if (self::$is_registered) {
+            spl_autoload_unregister([self::class, 'autoload']);
+            self::$is_registered = false;
+        }
+    }
+
     public static function registerAutoloader()
     {
         if (self::$is_registered) {
@@ -54,20 +67,32 @@ final class AliasLoader
 
     public static function autoload($class)
     {
-        $namespace_class = $class;
+        if ($resolved = self::resolve(self::$alias_map, $class)) {
+            class_alias($resolved, $class);
+        }
+    }
+
+    /**
+     * @param  array        $alias_map
+     * @param  string       $input_class
+     * @return string|false
+     */
+    public static function resolve(array $alias_map, $input_class)
+    {
+        $class = $input_class;
 
         while (true) {
-            if (isset(self::$alias_map[$namespace_class])) {
-                class_alias(self::$alias_map[$namespace_class], $class, true);
-                return true;
+            if (isset($alias_map[$class])) {
+                return '\\' . $alias_map[$class];
             }
 
-            if (strpos($namespace_class, '\\') === false) {
+            if (strpos($class, '\\') === false) {
                 break;
             }
 
-            list($_, $namespace_class) = explode('\\', $namespace_class, 2);
-       }
+            list($_, $class) = explode('\\', $class, 2);
+            //var_dump([$_ => $class, $alias_map]);
+        }
 
         return false;
     }
