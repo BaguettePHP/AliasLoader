@@ -50,7 +50,7 @@ final class AliasLoader
     public static function unregisterAutoloader()
     {
         if (self::$is_registered) {
-            spl_autoload_unregister([self::class, 'autoload']);
+            spl_autoload_unregister(self::class.'::autoload');
             self::$is_registered = false;
         }
     }
@@ -61,7 +61,7 @@ final class AliasLoader
             return;
         }
 
-        spl_autoload_register([self::class, 'autoload'], true, false);
+        spl_autoload_register(self::class.'::autoload', true, false);
         self::$is_registered = true;
     }
 
@@ -90,8 +90,7 @@ final class AliasLoader
                 break;
             }
 
-            list($_, $class) = explode('\\', $class, 2);
-            //var_dump([$_ => $class, $alias_map]);
+            $class = explode('\\', $class, 2)[1];
         }
 
         return false;
