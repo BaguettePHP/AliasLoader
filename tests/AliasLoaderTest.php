@@ -26,8 +26,8 @@ final class AliasLoaderTest extends \PHPUnit_Framework_TestCase
     {
         \Teto\AliasLoader::add('Deep\Nested\Library\Module\Awesome\SettingMiss', 'AwesomeClass');
 
-        $message = 'Class \'\Deep\Nested\Library\Module\Awesome\SettingMiss\' not found';
-        $this->setExpectedException(\PHPUnit_Framework_Error_Warning::class, $message);
+        $message = '/Class \'?\\\\Deep\\\\Nested\\\\Library\\\\Module\\\\Awesome\\\\SettingMiss\'? not found/';
+        $this->setExpectedExceptionRegExp(\PHPUnit_Framework_Error_Warning::class, $message);
 
         AwesomeClass::awesome_method();
     }
